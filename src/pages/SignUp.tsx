@@ -1,32 +1,41 @@
 import styled from "styled-components";
 import Logo from "../assets/logo.svg";
 import { useSelector, useDispatch } from "react-redux";
-import { updateLogin } from "../store/loginSlice";
+import { updateSignup } from "../store/signupSlice";
+import { useNavigate } from "react-router-dom";
 
-interface LoginState {
+interface SignupState {
   email: string;
-  password: string;
+  password1: string;
+  password2: string;
 }
 
-function Login() {
+function SignUp() {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { email, password } = useSelector(
-    (state: { login: LoginState }) => state.login
+  const { email, password1, password2 } = useSelector(
+    (state: { signup: SignupState }) => state.signup
   );
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value;
-    dispatch(updateLogin({ email: newEmail, password }));
+    dispatch(updateSignup({ email: newEmail, password1, password2 }));
   };
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePassword1Change = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPassword = e.target.value;
-    dispatch(updateLogin({ email, password: newPassword }));
+    dispatch(updateSignup({ email, password1: newPassword, password2 }));
+  };
+
+  const handlePassword2Change = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPassword = e.target.value;
+    dispatch(updateSignup({ email, password1, password2: newPassword }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ email, password });
+    navigate("/home");
+    console.log({ email, password1, password2 });
   };
 
   return (
@@ -35,7 +44,7 @@ function Login() {
         <img src={Logo} alt="Logo" />
       </LogoBox>
       <FillInBox>
-        <Title>Login</Title>
+        <Title>Sign Up</Title>
         <Form onSubmit={handleSubmit}>
           <InputBox>
             <Input
@@ -49,22 +58,30 @@ function Login() {
             <Input
               type="password"
               placeholder="Password"
-              value={password}
-              onChange={handlePasswordChange}
+              value={password1}
+              onChange={handlePassword1Change}
             />
           </InputBox>
-          <Button type="submit">Login to your account</Button>
+          <InputBox>
+            <Input
+              type="password"
+              placeholder="Repeat Password"
+              value={password2}
+              onChange={handlePassword2Change}
+            />
+          </InputBox>
+          <Button type="submit">Create an account</Button>
         </Form>
         <SignUpSuggestion>
-          <Question>Don’t have an account?</Question>
-          <RedirectToSignUp href="/sign_up">Sign Up</RedirectToSignUp>
+          <Question>Already have an account?</Question>
+          <RedirectToLogin href="/">Login</RedirectToLogin>
         </SignUpSuggestion>
       </FillInBox>
     </LoginWrapper>
   );
 }
 
-export default Login;
+export default SignUp;
 
 const LoginWrapper = styled.section`
   display: flex;
@@ -159,7 +176,7 @@ const Question = styled.p`
   line-height: normal;
 `;
 
-const RedirectToSignUp = styled.a`
+const RedirectToLogin = styled.a`
   color: var(--red);
   font-feature-settings: "clig" off, "liga" off;
   font-family: Outfit;
